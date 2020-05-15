@@ -5,40 +5,38 @@ import io.gatling.core.protocol.Protocol
 import io.gatling.data.generator.RandomDataGenerator
 import org.apache.avro.generic.GenericData.Record
 import org.apache.avro.{Schema, SchemaBuilder}
+import org.apache.avro.generic.{GenericData, GenericRecord}
+import org.apache.avro.generic.GenericData.Record
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+
+
 
 class KafkaProducerProtocol[K: Manifest, V: Manifest](props: java.util.HashMap[String, Object],
                                   topics: String,
                                   dataGenerator: RandomDataGenerator[K, V] = null)
   extends Protocol {
-  private final val kafkaProducer = new KafkaProducer[K, V](props)
+  private final val kafkaProducer = new KafkaProducer[String, Record](props)
 
   private var key: K = _
   private var value: V = _
+
+
+
+
+  def generateRecord(schema:Schema): Record = {
+    val avroRecord: Record = new GenericData.Record(schema)
+
+    avroRecord
+  }
 
   def call(session: Session,
            schema: Option[Schema] = None): Unit = {
     val attributes = session.attributes
 
-    if (attributes.nonEmpty) {
-      if (manifest[K].runtimeClass.isArray &&
-          manifest[V].runtimeClass.isArray) {
-        key = attributes.toString().getBytes().asInstanceOf[K]
-        value = attributes.toString().getBytes().asInstanceOf[V]
-      } else {
-        key = createRecordForAvroSchema(attributes).asInstanceOf[K]
-        value = createRecordForAvroSchema(attributes).asInstanceOf[V]
-      }
-    } else if (schema.nonEmpty) {
-      key = dataGenerator.generateKey(schema)
-      value = dataGenerator.generateValue(schema)
-    } else {
-      key = dataGenerator.generateKey()
-      value = dataGenerator.generateValue()
-    }
+    val avroRecord = generateRecord(schema.get)
 
-    val record = new ProducerRecord[K, V](topics, key, value)
+    val record = new ProducerRecord(topics, "key", avroRecord)
     kafkaProducer.send(record)
   }
 
