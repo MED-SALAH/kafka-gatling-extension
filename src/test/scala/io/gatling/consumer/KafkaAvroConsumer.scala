@@ -11,10 +11,10 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord, Consum
 import scala.collection.JavaConversions._
 
 object KafkaAvroConsumer extends App {
-  val kafkaTopic = "test_topic"
-  val kafkaBrokers = "localhost:9092"
+  val kafkaTopic = "event"
+  val kafkaBrokers = "35.180.127.210:9092"
 
-  val schemaRegistryUrl = "http://localhost:8081"
+  val schemaRegistryUrl = "http://35.180.127.210:8081"
   val VALUE_SERIALIZATION_FLAG = "value"
 
   val props = new util.HashMap[String, Object]()
@@ -28,6 +28,7 @@ object KafkaAvroConsumer extends App {
   props.put("enable.auto.commit", "true")
   props.put("auto.commit.interval.ms", "1000")
   props.put("session.timeout.ms", "30000")
+  props.put("auto.offset.reset", "earliest")
 
   val consumer = new KafkaConsumer[GenericRecord, GenericRecord](props)
   consumer.subscribe(util.Arrays.asList(kafkaTopic))
@@ -42,6 +43,8 @@ object KafkaAvroConsumer extends App {
   while (true) {
     val records: ConsumerRecords[GenericRecord, GenericRecord] = consumer.poll(100)
     val recordsIterator: java.util.Iterator[ConsumerRecord[GenericRecord, GenericRecord]] = records.iterator()
+    println("---------->Schema ",schema)
+    println("---------->Records ",records.iterator())
 
 //    if (records.count() > 0)
 //      println("Records : " + (System.currentTimeMillis() / 1000) + " - " + records.count())
@@ -50,6 +53,7 @@ object KafkaAvroConsumer extends App {
       val currentRecord = recordsIterator.next()
 
       val value = currentRecord.value()
+      println("---------->Value",value)
 
       if (value.isInstanceOf[GenericRecord]) {
         val valueStruct = value

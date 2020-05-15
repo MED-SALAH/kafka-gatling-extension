@@ -70,7 +70,9 @@ class RandomDataGenerator[K: Manifest, V: Manifest] {
     val avroRecord = new Record(schema.get)
     for (i <- 0 until length) {
       val field = schema.get.getFields.get(i)
+      println(field)
       val fieldType = field.schema().getType
+      println(fieldType)
 
       fieldType match {
         case Type.BYTES => avroRecord.put(i, 42.toByte)

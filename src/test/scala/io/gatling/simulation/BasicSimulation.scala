@@ -10,8 +10,8 @@ import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 
 class BasicSimulation extends Simulation {
-  val kafkaTopic = "test_topic"
-  val kafkaBrokers = "localhost:9092"
+  val kafkaTopic = "galting"
+  val kafkaBrokers = "35.180.127.210:9092"
 
   val props = new util.HashMap[String, Object]()
   props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers)
