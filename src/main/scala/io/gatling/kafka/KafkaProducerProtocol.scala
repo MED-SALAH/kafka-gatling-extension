@@ -25,9 +25,19 @@ class KafkaProducerProtocol[K: Manifest, V: Manifest](props: java.util.HashMap[S
 
 
   def generateRecord(schema:Schema): Record = {
-    val avroRecord: Record = new GenericData.Record(schema)
+    val eventRecord: Record = new GenericData.Record(schema)
+    val eventHeader: Record = new GenericData.Record(schema)
 
-    avroRecord
+    eventHeader.put("eventId", "blabla")
+
+
+
+
+
+
+    eventRecord.put("EventHeader", eventHeader)
+
+    eventRecord
   }
 
   def call(session: Session,
