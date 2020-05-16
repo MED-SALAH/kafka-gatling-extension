@@ -1,5 +1,6 @@
 package io.gatling.kafka
 
+import io.gatling.{ActeurDeclencheur, EventHeader}
 import io.gatling.core.Predef.Session
 import io.gatling.core.protocol.Protocol
 import io.gatling.data.generator.RandomDataGenerator
@@ -28,15 +29,17 @@ class KafkaProducerProtocol[K: Manifest, V: Manifest](props: java.util.HashMap[S
     val eventRecord: Record = new GenericData.Record(schema)
     val eventHeader: Record = new GenericData.Record(schema)
 
-    eventHeader.put("eventId", "blabla")
+    val acteurDeclencheur: Record = new Record(schema)
+    val canalnetEventBusinessContext: Record = new Record(schema)
 
 
+    eventHeader.put("eventid","time")
+    eventRecord.put(eventHeader, )
 
+    acteurDeclencheur.put(2,"acteur declancheur")
+    canalnetEventBusinessContext.put(3,"canal net")
 
-
-
-    eventRecord.put("EventHeader", eventHeader)
-
+    eventRecord.put("dd","sds")
     eventRecord
   }
 
